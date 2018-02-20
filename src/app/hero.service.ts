@@ -13,10 +13,14 @@ const httpOptions = {
 
 @Injectable()
 export class HeroService {
-  private heroesUrl = "http://localhost:8081/heroes";
+  private heroesUrl = "http://localhost:8080/heroes";
+  private heroesUrlFirebase = "https://dummydb-64a16.firebaseio.com/heroes.json";
+  private urlToUse = "";
   constructor(
     private messageService: MessageService,
-    private httpClient: HttpClient) { }
+    private httpClient: HttpClient) {
+      this.urlToUse = this.heroesUrl;
+     }
 
   private log(message: string): void {
     this.messageService.add(message);
@@ -25,8 +29,8 @@ export class HeroService {
   getHeroes(): Observable<Hero[]> {
     this.log('HeroService get heroes service called');
     //return of(HEROES);
-    const url = `${this.heroesUrl}`
-    return this.httpClient.get(url)
+    const url = `${this.urlToUse}`
+    return this.httpClient.get(url, httpOptions)
       .pipe(
       tap(_ => this.log("heroes fetched")),
       catchError(this.handleError('getHeroes', []))
@@ -34,7 +38,8 @@ export class HeroService {
   }
 
   getHero(id: Number): Observable<Hero> {
-    const url = `${this.heroesUrl}/${id}`
+    //const url = `https://dummydb-64a16.firebaseio.com/heroes/0.json`
+    const url = `${this.urlToUse}/${id}`
     this.log(url);
     //return of(HEROES.find(hero => hero.id === id));
     return this.httpClient.get<Hero>(url, httpOptions)
@@ -45,7 +50,7 @@ export class HeroService {
   }
 
   updateHero(hero: Hero): Observable<any> {
-    const url = `${this.heroesUrl}/${hero.id}`
+    const url = `${this.urlToUse}/${hero.id}`
     this.log(url);
     return this.httpClient.put(url, hero, httpOptions)
       .pipe(
@@ -55,7 +60,7 @@ export class HeroService {
   }
 
   addHero(hero: Hero): Observable<Hero> {
-    return this.httpClient.post(`${this.heroesUrl}`, hero, httpOptions)
+    return this.httpClient.post(`${this.urlToUse}`, hero, httpOptions)
     .pipe(
       tap((hero: Hero) => this.log(`added hero with id ${hero.id}`)),
       catchError(this.handleError('addHero', []))
@@ -64,7 +69,7 @@ export class HeroService {
 
   deleteHero(hero: Hero | number) : Observable<any> {
     const id = typeof hero === 'number' ? hero : hero.id; 
-    const url = `${this.heroesUrl}/${id}`;
+    const url = `${this.urlToUse}/${id}`;
 
     return this.httpClient.delete(url, httpOptions)
     .pipe(
@@ -78,7 +83,7 @@ export class HeroService {
       return of([]);
     }
 
-    return this.httpClient.get(`${this.heroesUrl}?name=${name}`)
+    return this.httpClient.get(`${this.urlToUse}?name=${name}`)
     .pipe(
       tap(_ => this.log(`found heroes matching ${item}`)),
       catchError(this.handleError('searchHero with ${item} called',[]))
