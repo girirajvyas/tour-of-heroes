@@ -12,6 +12,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
 
+import { HeroendpointApi } from './generated/api/HeroendpointApi';
+import { HttpModule  } from '@angular/http';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,9 +28,10 @@ import { HeroSearchComponent } from './hero-search/hero-search.component';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    HttpModule 
   ],
-  providers: [HeroService, MessageService],
+  providers: [HeroService, MessageService, HeroendpointApi],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

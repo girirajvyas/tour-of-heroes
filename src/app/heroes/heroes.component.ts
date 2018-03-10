@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { Observable } from 'rxjs/Observable';
+import { HeroendpointApi } from '../generated/api/HeroendpointApi';
+import { HeroCustom } from '../heroCustom';
 
 @Component({
   selector: 'app-heroes',
@@ -9,11 +11,12 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./heroes.component.css']
 })
 export class HeroesComponent implements OnInit {
-  heroes: Hero[];
-  filteredHeroes: Hero[];
+  heroes: HeroCustom[];
+  filteredHeroes: HeroCustom[];
 
   //selectedHero: Hero;
-  constructor(private heroService: HeroService) {
+  constructor(private heroService: HeroService,
+  private heroendpointApi: HeroendpointApi) {
 
   }
 
@@ -22,6 +25,12 @@ export class HeroesComponent implements OnInit {
   }
 
   getHeroes(): void {
+    //below part shoul be in service and that should fetch
+    this.heroendpointApi.searchHeroesByNameUsingGET()
+    .subscribe(heroFromService => {
+      console.log(heroFromService);
+    })
+
     this.heroService.getHeroes()
     .subscribe(heroesFromService => {
       this.heroes = heroesFromService;

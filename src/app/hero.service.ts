@@ -7,6 +7,9 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
+import { HeroendpointApi } from './generated/api/HeroendpointApi';
+import { HeroCustom } from './heroCustom';
+
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
@@ -18,7 +21,8 @@ export class HeroService {
   private urlToUse = "";
   constructor(
     private messageService: MessageService,
-    private httpClient: HttpClient) {
+    private httpClient: HttpClient,
+    private heroendpointApi: HeroendpointApi) {
       this.urlToUse = this.heroesUrl;
      }
 
@@ -26,15 +30,24 @@ export class HeroService {
     this.messageService.add(message);
   }
 
-  getHeroes(): Observable<Hero[]> {
+  getHeroes(): Observable<HeroCustom[]> {
     this.log('HeroService get heroes service called');
-    //return of(HEROES);
-    const url = `${this.urlToUse}`
+    //return of(HEROES); // mock data
+    console.log("inside get heroes, now calling generated api from swagger")
+    return this.heroendpointApi.searchHeroesByNameUsingGET()
+    .map(value => {
+      let custArray : HeroCustom[];
+      custArray = value;
+      return custArray;
+    });
+    /*const url = `${this.urlToUse}`
     return this.httpClient.get(url, httpOptions)
       .pipe(
       tap(_ => this.log("heroes fetched")),
       catchError(this.handleError('getHeroes', []))
-      )
+      )*/
+
+
   }
 
   getHero(id: Number): Observable<Hero> {
